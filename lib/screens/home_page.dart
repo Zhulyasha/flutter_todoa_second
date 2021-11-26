@@ -1,12 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_todoa_second/model/item_data.dart';
 import 'package:flutter_todoa_second/screens/detail_screen.dart';
 import 'package:flutter_todoa_second/widget/bottom_button.dart';
 import 'package:flutter_todoa_second/widget/todo_row.dart';
-
-import 'add_task_page.dart';
+import 'package:flutter_todoa_second/screens/add_task_page.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({Key? key}) : super(key: key);
@@ -15,38 +13,41 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('ToDoa'),
-      ),
-      body: StreamBuilder(
-        stream: _firestore.collection("todos").snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          List<ItemData> items = [];
-          if (snapshot.hasData) {
-            snapshot.data.docs.forEach((QueryDocumentSnapshot query) {
-              Map<String, dynamic> data = query.data();
-              items.add(ItemData(
-                title: data['title'],
-                image: data['image'],
-                isChecked: data['isChecked'],
-              ));
-            });
-          }
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('ToDoa'),
+        ),
+        body: StreamBuilder(
+          stream: _firestore.collection("todos").snapshots(),
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            List<ItemData> items = [];
+            if (snapshot.hasData) {
+              snapshot.data.docs.forEach((QueryDocumentSnapshot query) {
+                Map<String, dynamic> data = query.data();
+                items.add(ItemData(
+                  title: data['title'],
+                  image: data['image'],
+                  isChecked: data['isChecked'],
+                ));
+              });
+            }
 
-          if (items.isEmpty) {
-            return const Center(
-              child: Text('No todos'),
-            );
-          } else {
-            return Stack(
-              children: [
-                _buildBodyContent(items),
-                _buildBottomBar(context),
-              ],
-            );
-          }
-        },
+            if (items.isEmpty) {
+              return const Center(
+                child: Text('No todos'),
+              );
+            } else {
+              return Stack(
+                children: [
+                  _buildBodyContent(items),
+                  _buildBottomBar(context),
+                ],
+              );
+            }
+          },
+        ),
       ),
     );
   }

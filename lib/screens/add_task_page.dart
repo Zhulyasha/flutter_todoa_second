@@ -2,7 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_todoa_second/widget/rounded_button.dart';
 
-class AddTaskPage extends StatelessWidget {
+class AddTaskPage extends StatefulWidget {
+  @override
+  State<AddTaskPage> createState() => _AddTaskPageState();
+}
+
+class _AddTaskPageState extends State<AddTaskPage> {
+  final firestore = FirebaseFirestore.instance;
+  var newTitle = '';
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -29,7 +37,11 @@ class AddTaskPage extends StatelessWidget {
           TextField(
             autofocus: true,
             textAlign: TextAlign.center,
-            onChanged: (newText) {},
+            onChanged: (newText) {
+              setState(() {
+                this.newTitle = newText;
+              });
+            },
           ),
           const SizedBox(
             height: 20,

@@ -1,12 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_todoa_second/model/item_data.dart';
+import 'package:flutter_todoa_second/screens/detail_screen.dart';
+import 'package:flutter_todoa_second/widget/bottom_button.dart';
 import 'package:flutter_todoa_second/widget/todo_row.dart';
 
-class HomePage extends StatelessWidget {
-  final List items;
+import 'add_task_page.dart';
 
-  HomePage({Key? key, required this.items}) : super(key: key);
+class HomePage extends StatelessWidget {
+  HomePage({Key? key}) : super(key: key);
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -14,18 +19,90 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('ToDoa'),
       ),
-      body: Center(
-        child: ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              ItemData item = items[index];
-              return ToDoRow(
-                isChecked: item.isChecked,
-                title: item.title,
-                image: item.image,
-              );
-            }),
+      body: StreamBuilder(
+        stream: _firestore.collection("todos").snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          List<ItemData> items = [];
+          if (snapshot.hasData) {
+            snapshot.data.docs.forEach((QueryDocumentSnapshot query) {
+              Map<String, dynamic> data = query.data();
+              items.add(ItemData(
+                title: data['title'],
+                image: data['image'],
+                isChecked: data['isChecked'],
+              ));
+            });
+          }
+
+          if (items.isEmpty) {
+            return const Center(
+              child: Text('No todos'),
+            );
+          } else {
+            return Stack(
+              children: [
+                _buildBodyContent(items),
+                _buildBottomBar(context),
+              ],
+            );
+          }
+        },
       ),
+    );
+  }
+
+  Widget _buildBodyContent(List<ItemData> items) {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: ListView.builder(
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () async {
+              var result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetailScreen(
+                      itemData: items[index],
+                    ),
+                  ));
+
+              debugPrint('$result');
+            },
+            child: ListTile(
+              title: ToDoRow(
+                item: items[index],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildBottomBar(BuildContext context) {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: BottomButton(
+          title: 'Add Item',
+          onTap: () {
+            showModalBottomSheet<void>(
+              context: context,
+              isScrollControlled: true,
+              builder: (BuildContext context) {
+                return Container(
+                  height: 220,
+                  color: Color(0xff757575),
+                  child: AddTaskPage(),
+                );
+              },
+            );
+          }),
     );
   }
 }

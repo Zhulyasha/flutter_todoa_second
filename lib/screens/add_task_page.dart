@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_todoa_second/widget/rounded_button.dart';
 
@@ -36,6 +37,12 @@ class AddTaskPage extends StatelessWidget {
           RoundedButton(
             title: 'Add',
             onTap: () {
+              _firestore.collection('todos').add({
+                'title': newTitle,
+                'image':
+                    'https://firebasestorage.googleapis.com/v0/b/todoa-5403a.appspot.com/o/todo.png?alt=media&token=e585808f-3405-4004-9f4a-3fc5ee42fa19',
+                'isChecked': false,
+              });
               Navigator.pop(context);
             },
           ),

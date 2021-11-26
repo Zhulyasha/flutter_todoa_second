@@ -1,54 +1,38 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_todoa_second/model/item_data.dart';
 
 class ToDoRow extends StatelessWidget {
-  final String title;
+  final ItemData item;
 
-  const ToDoRow(
-      {Key? key,
-      required this.title,
-      required bool isChecked,
-      required String image})
-      : super(key: key);
+  const ToDoRow({
+    Key? key,
+    required this.item,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Checkbox(
-          value: true,
+          value: item.isChecked,
           onChanged: (bool? value) {},
         ),
-        Container(
-          margin: const EdgeInsets.all(12.0),
-          width: 60.0,
-          height: 60.0,
-          decoration: BoxDecoration(
-            color: Colors.redAccent,
-            // image: DecorationImage(
-            //   image: AssetImage('assets/bg_header.png'),
-            //   fit: BoxFit.cover,
-            // ),
-            borderRadius: const BorderRadius.all(Radius.circular(50.0)),
-            border: Border.all(
-              color: Colors.white,
-              width: 4.0,
-            ),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.grey,
-                offset: Offset(0.0, 4.0), //(x,y)
-                blurRadius: 6.0,
-              ),
-            ],
-          ),
+        Image.network(
+          item.image,
+          width: 35,
+          height: 35,
         ),
-        Container(
-            margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 0.0),
-            child: Text(
-              (title),
-              style: const TextStyle(fontSize: 24),
-            ))
+        Flexible(
+            child: Container(
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 12.0, vertical: 0.0),
+                child: Text(
+                  item.title,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  style: const TextStyle(fontSize: 24),
+                )))
       ],
     );
   }

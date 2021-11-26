@@ -12,7 +12,7 @@ class DetailScreen extends StatelessWidget {
         child: Scaffold(
       body: GestureDetector(
         onTap: () {
-          Navigator.pop(context);
+          Navigator.pop(context, itemData.title);
         },
         child: Container(
           child: Center(
